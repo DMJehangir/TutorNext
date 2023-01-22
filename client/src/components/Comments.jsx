@@ -24,12 +24,16 @@ const Input = styled.input`
   padding: 5px;
   width: 100px;
 `
+const Button = styled.button`
+
+`;
 
 function Comments({videoId}) {
 
   const {currentUser} = useSelector((state)=> state.user);
 
   const [comments, setComments] = useState([]);
+  const [desc, setDesc] = useState('');
 
   useEffect(() => {
     const fetchComments = async ()=> {
@@ -41,12 +45,18 @@ function Comments({videoId}) {
     fetchComments();
   }, [videoId])
   
+  const handleComment = async (e) => {
+    try {
+      await axios.post('/comments',{desc, videoId})
+    } catch (err) {}
+  };
 
   return (
     <Container>
       <NewComment>
         <Avatar src={currentUser.img}/>
-        <Input placeholder='Add a Comment...'/>
+        <Input value={desc} placeholder='Add a Comment...' onChange={(e)=> setDesc(e.target.value)}/>
+        <Button onClick={handleComment}>Post</Button>
       </NewComment>
         {comments.map(comment=> (
           <Comment key={comment._id} comment={comment}/>
