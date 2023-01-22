@@ -109,89 +109,80 @@ const Subscribe = styled.button`
   cursor: pointer;
 `;
 
-// const VideoFrame = styled.video`
-//   max-height: 720px;
-//   width: 100%;
-//   object-fit: cover;
-// `;
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
+`;
 
-const Video = () => {
-//   const { currentUser } = useSelector((state) => state.user);
-//   const { currentVideo } = useSelector((state) => state.video);
-//   const dispatch = useDispatch();
+function Video() {
 
-//   const path = useLocation().pathname.split("/")[2];
+  const path = useLocation().pathname.split('/')[2]
 
-//   const [channel, setChannel] = useState({});
+  const { currentUser } = useSelector((state) => state.user);
+  const { currentVideo } = useSelector((state) => state.video);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const videoRes = await axios.get(`/videos/find/${path}`);
-  //       const channelRes = await axios.get(
-  //         `/users/find/${videoRes.data.userId}`
-  //       );
-  //       setChannel(channelRes.data);
-  //       dispatch(fetchSuccess(videoRes.data));
-  //     } catch (err) {
-  //       dispatch(fetchFailure());
-  //     }
-  //   };
-  //   fetchData();
-  // }, [path, dispatch]);
+  const [channel, setChannel] = useState({});
 
-  // const handleLike = async () => {
-  //   await axios.put(`/users/like/${currentVideo._id}`);
-  //   dispatch(like(currentUser._id));
-  // };
-  // const handleDislike = async () => {
-  //   await axios.put(`/users/dislike/${currentVideo._id}`);
-  //   dispatch(dislike(currentUser._id));
-  // };
+  const handleLike = async () => {
+        await axios.put(`/users/like/${currentVideo._id}`);
+        dispatch(like(currentUser._id));
+      };
+      const handleDislike = async () => {
+        await axios.put(`/users/dislike/${currentVideo._id}`);
+        dispatch(dislike(currentUser._id));
+      };
+      const handleSub = async () => {
+            currentUser.subscribedUsers.includes(channel._id)
+              ? await axios.put(`/users/unsub/${channel._id}`)
+              : await axios.put(`/users/sub/${channel._id}`);
+            dispatch(subscription(channel._id));
+          };
 
-  // const handleSub = async () => {
-  //   currentUser.subscribedUsers.includes(channel._id)
-  //     ? await axios.put(`/users/unsub/${channel._id}`)
-  //     : await axios.put(`/users/sub/${channel._id}`);
-  //   dispatch(subscription(channel._id));
-  // };
+  useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const videoRes = await axios.get(`/videos/find/${path}`);
+            const channelRes = await axios.get(`/users/find/${videoRes.data.userId}`);
+
+            setChannel(channelRes.data);
+            dispatch(fetchSuccess(videoRes.data));
+          } catch (err) {
+            dispatch(fetchFailure());
+          }
+        };
+        fetchData();
+      }, [path, dispatch]);
 
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe 
-            width="100%" 
-            height="480" 
-            src="https://www.youtube.com/embed/551hCMK0Qqo" 
-            title="Tekken 8 - Story & Gameplay Teaser Trailer | PS5 Games" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-          </iframe>
+          <VideoFrame src={currentVideo.videoUrl} controls/>
         </VideoWrapper>
-        {/* <Title>{currentVideo.title}</Title> */}
+        <Title>{currentVideo.title}</Title>
         <Details>
           <Info>
-            {/* {currentVideo.views} views • {format(currentVideo.createdAt)} */}
+            {currentVideo.views} views • {format(currentVideo.createdAt)}
           </Info>
           <Buttons>
-            {/* <Button onClick={handleLike}> */}
-              {/* {currentVideo.likes?.includes(currentUser?._id) ? ( */}
-                {/* <ThumbUpIcon /> */}
-              {/* ) : ( */}
+            <Button onClick={handleLike}>
+              {currentVideo.likes?.includes(currentUser?._id) ? (
+                <ThumbUpIcon />
+              ) : (
                 <ThumbUpOutlinedIcon />
-              {/* )}{" "} */}
-              {/* {currentVideo.likes?.length} */}
-            {/* </Button> */}
-            {/* <Button onClick={handleDislike}>
-              {currentVideo.dislikes?.includes(currentUser?._id) ? ( */}
-                {/* <ThumbDownIcon /> */}
-              {/* ) : ( */}
+              )}{" "}
+              {currentVideo.likes?.length}
+            </Button>
+            <Button onClick={handleDislike}>
+              {currentVideo.dislikes?.includes(currentUser?._id) ? (
+                <ThumbDownIcon />
+              ) : (
                 <ThumbDownOffAltOutlinedIcon />
-              {/* )}{" "} */}
-              {/* Dislike */}
-            {/* </Button> */}
+              )}{" "}
+              Dislike
+            </Button>
             <Button>
               <ReplyOutlinedIcon /> Share
             </Button>
@@ -203,25 +194,25 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            {/* <Image src={channel.img} /> */}
+            <Image src={channel.img} />
             <ChannelDetail>
-              {/* <ChannelName>{channel.name}</ChannelName> */}
-              {/* <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter> */}
-              {/* <Description>{currentVideo.desc}</Description> */}
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
+              <Description>{currentVideo.desc}</Description>
             </ChannelDetail>
           </ChannelInfo>
-          {/* <Subscribe onClick={handleSub}> */}
-            {/* {currentUser.subscribedUsers?.includes(channel._id) */}
-              {/* ? "SUBSCRIBED"
+          <Subscribe onClick={handleSub}>
+            {currentUser.subscribedUsers?.includes(channel._id)
+              ? "SUBSCRIBED"
               : "SUBSCRIBE"}
-          </Subscribe> */}
+          </Subscribe>
         </Channel>
         <Hr />
-        {/* <Comments videoId={currentVideo._id} /> */}
+        <Comments videoId={currentVideo._id} />
       </Content>
-      {/* <Recommendation tags={currentVideo.tags} /> */}
+      <Recommendation tags={currentVideo.tags} />
     </Container>
-  );
-};
+  )
+}
 
-export default Video;
+export default Video
